@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "英単語カード スマホ版",
+  "short_name": "英単語カード",
+  "description": "2,027語の単語カード、復習記録、発音、テストPDF作成",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f3ed",
+  "theme_color": "#12324a",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

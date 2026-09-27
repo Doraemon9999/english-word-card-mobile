@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12324a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="英単語カード">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <title>英単語カード</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">A</span>
+      <div>
+        <p class="eyebrow">WORD PRACTICE</p>
+        <h1>英単語カード</h1>
+      </div>
+    </div>
+    <span id="networkBadge" class="network-badge">確認中</span>
+  </header>
+
+  <main>
+    <nav class="tabbar" aria-label="機能切り替え">
+      <button class="tab active" data-view="cards" aria-selected="true">
+        <span class="tab-icon" aria-hidden="true">▣</span><span>カード</span>
+      </button>
+      <button class="tab" data-view="tests" aria-selected="false">
+        <span class="tab-icon" aria-hidden="true">✓</span><span>テスト</span>
+      </button>
+      <button class="tab" data-view="settings" aria-selected="false">
+        <span class="tab-icon" aria-hidden="true">⚙</span><span>設定</span>
+      </button>
+    </nav>
+
+    <section id="cardsView" class="view active" aria-labelledby="cardsTitle">
+      <h2 id="cardsTitle" class="sr-only">単語カード</h2>
+
+      <div class="study-summary" aria-label="今日の学習状況">
+        <div class="summary-item">
+          <span>今日の回答</span>
+          <strong><b id="todayCount">0</b><small>問</small></strong>
+        </div>
+        <div class="summary-divider" aria-hidden="true"></div>
+        <div class="summary-item">
+          <span>今日の正解率</span>
+          <strong><b id="todayAccuracy">—</b><small id="accuracyUnit"></small></strong>
+        </div>
+        <div class="summary-divider" aria-hidden="true"></div>
+        <div class="summary-item">
+          <span>復習リスト</span>
+          <strong><b id="wrongCount">0</b><small>語</small></strong>
+        </div>
+      </div>
+
+      <details class="panel card-settings">
+        <summary>
+          <span><span class="summary-icon" aria-hidden="true">☷</span> 出題設定</span>
+          <strong id="rangeSummary">No.1〜2027</strong>
+        </summary>
+        <div class="controls-grid settings-content">
+          <label>開始番号
+            <input id="cardStart" type="number" inputmode="numeric" min="1" max="2027" value="1">
+          </label>
+          <label>終了番号
+            <input id="cardEnd" type="number" inputmode="numeric" min="1" max="2027" value="2027">
+          </label>
+          <label class="full">出題方向
+            <select id="cardDirection">
+              <option value="en-ja">英語 → 日本語</option>
+              <option value="ja-en">日本語 → 英語</option>
+            </select>
+          </label>
+          <label class="check-row full">
+            <input id="wrongOnly" type="checkbox">
+            <span>復習リストだけを出題</span>
+          </label>
+        </div>
+      </details>
+
+      <div class="progress-row">
+        <span id="cardRangeInfo">対象 2,027語</span>
+        <button id="shuffleCards" class="text-button">シャッフル</button>
+      </div>
+      <div class="deck-progress" aria-hidden="true"><span id="cardProgressBar"></span></div>
+
+      <div class="card-shell">
+        <button id="speakWord" class="speak-button" type="button" aria-label="英単語を発音">♪</button>
+        <div id="wordCard" class="word-card" role="button" tabindex="0" aria-live="polite" aria-expanded="false">
+          <span id="cardNumber" class="card-number">No. 1</span>
+          <strong id="cardPrompt">follow</strong>
+          <span id="cardHint">タップして答えを見る</span>
+          <span id="cardAnswer" class="card-answer" hidden>～の後に続く、～に従う</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button id="markWrong" class="button danger"><span aria-hidden="true">↻</span> もう一度</button>
+        <button id="markKnown" class="button success"><span aria-hidden="true">✓</span> 覚えた</button>
+      </div>
+      <p class="gesture-hint">答えを表示した後は、左へスワイプで「もう一度」、右で「覚えた」</p>
+    </section>
+
+    <section id="testsView" class="view" aria-labelledby="testsTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">PDF TEST MAKER</p><h2 id="testsTitle">テストを作成</h2></div>
+        <span id="testStatus" class="status-pill">未作成</span>
+      </div>
+
+      <div class="panel controls-grid">
+        <label>開始番号
+          <input id="testStart" type="number" inputmode="numeric" min="1" max="2027" value="1">
+        </label>
+        <label>終了番号
+          <input id="testEnd" type="number" inputmode="numeric" min="1" max="2027" value="2027">
+        </label>
+        <label>問題数
+          <select id="questionCount"><option value="10">10問</option><option value="20">20問</option></select>
+        </label>
+        <label>出題方向
+          <select id="testDirection"><option value="en-ja">英語 → 日本語</option><option value="ja-en">日本語 → 英語</option></select>
+        </label>
+        <button id="createTest" class="button primary full">ランダムテストを作成</button>
+      </div>
+
+      <div id="testEmpty" class="empty-state">
+        <span class="empty-icon" aria-hidden="true">✎</span>
+        <b>テストはまだありません</b>
+        <span>範囲と問題数を選んで作成してください。</span>
+      </div>
+      <div id="testResult" hidden>
+        <div class="panel test-preview">
+          <div class="test-meta"><b id="testTitle">英単語テスト</b><span id="testSeed"></span></div>
+          <ol id="questionList"></ol>
+        </div>
+
+        <div class="action-stack">
+          <button id="downloadQuestions" class="button secondary">問題PDFを保存</button>
+          <button id="downloadAnswers" class="button secondary">解答PDFを保存</button>
+          <button id="sendEmail" class="button primary">問題・解答PDFをメール送信</button>
+        </div>
+        <div id="sendResult" class="result-message" role="status" hidden></div>
+      </div>
+    </section>
+
+    <section id="settingsView" class="view" aria-labelledby="settingsTitle">
+      <div class="section-heading"><div><p class="eyebrow">APP SETTINGS</p><h2 id="settingsTitle">設定</h2></div></div>
+
+      <details class="panel settings-details">
+        <summary>メール送信設定 <span>任意</span></summary>
+        <div class="settings-stack settings-content">
+          <label>送信先メールアドレス
+            <input id="recipientEmail" type="email" inputmode="email" autocomplete="email" placeholder="example@gmail.com">
+          </label>
+          <label>Google Apps Script のウェブアプリURL
+            <input id="gasUrl" type="url" inputmode="url" autocomplete="url" placeholder="https://script.google.com/macros/s/.../exec">
+          </label>
+          <label>共有キー
+            <input id="sharedKey" type="password" autocomplete="off" placeholder="GAS側と同じ文字列">
+          </label>
+          <label class="check-row"><input id="showSharedKey" type="checkbox"><span>共有キーを表示</span></label>
+          <button id="saveSettings" class="button primary">この端末に保存</button>
+          <div id="settingsResult" class="result-message" role="status" hidden></div>
+        </div>
+      </details>
+
+      <div class="panel info-panel">
+        <h3 id="platformGuideTitle">ホーム画面への追加</h3>
+        <ol>
+          <li id="platformGuideStep1">このページをスマートフォンのブラウザで開きます。</li>
+          <li id="platformGuideStep2">ブラウザのメニューから「ホーム画面に追加」を選びます。</li>
+          <li id="platformGuideStep3">追加したアイコンから起動します。</li>
+        </ol>
+        <p id="standaloneInfo">使用環境を確認しています。</p>
+      </div>
+
+      <div class="panel info-panel">
+        <h3>データとオフライン利用</h3>
+        <p>学習記録、復習リスト、メール設定はこの端末のブラウザ内だけに保存されます。初回読み込み後は、単語カードとテストPDF作成をオフラインでも利用できます。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>収録語数 <b id="wordTotal">2,027</b>語 ・ <span id="appPlatform">スマホ/PWA版</span> <b id="appVersion"></b></footer>
+
+  <div id="swipeToast" class="swipe-toast" role="status" hidden></div>
+  <div id="busyOverlay" class="busy-overlay" hidden aria-live="assertive">
+    <div class="spinner"></div><p id="busyText">処理中です…</p>
+  </div>
+
+  <script src="words.js"></script>
+  <script src="vendor/pdf-lib.min.js"></script>
+  <script src="vendor/fontkit.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
